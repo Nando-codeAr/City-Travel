@@ -480,7 +480,8 @@ final class Game {
         if (c.grounded) {
             if (segAt(c.level, c.x) == null) {
                 c.grounded = false;
-                c.vy = 0;
+                c.vy = 60f;      // empujoncito hacia abajo para que caiga sin dudar
+                c.y += 1f;
                 c.coyote = 0.09f;
             }
         }
@@ -493,18 +494,14 @@ final class Game {
             if (c.vy > 0) {
                 for (int L = 3; L >= 0; L--) {
                     float ly = LEVEL_Y[L];
-                    if (prevY <= ly + 0.5f && c.y >= ly) {
-                        if (segAt(L, c.x) != null || segAt(L, c.x - 8) != null || segAt(L, c.x + 8) != null) {
-                            c.y = ly;
-                            c.vy = 0;
-                            c.grounded = true;
-                            c.level = L;
-                            if (segAt(L, c.x) == null) {
-                                // corregir para quedar apoyado
-                                c.x = mod(c.x + (segAt(L, c.x - 8) != null ? -8 : 8), WL);
-                            }
-                            break;
-                        }
+                    // prevY < ly (estricto): si el auto acaba de salir del borde de este
+                    // mismo nivel, no lo vuelve a apoyar y cae limpio al de abajo
+                    if (prevY < ly - 0.5f && c.y >= ly && segAt(L, c.x) != null) {
+                        c.y = ly;
+                        c.vy = 0;
+                        c.grounded = true;
+                        c.level = L;
+                        break;
                     }
                 }
             }
