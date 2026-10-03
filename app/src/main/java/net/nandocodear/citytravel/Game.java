@@ -494,9 +494,9 @@ final class Game {
             if (c.vy > 0) {
                 for (int L = 3; L >= 0; L--) {
                     float ly = LEVEL_Y[L];
-                    // prevY < ly (estricto): si el auto acaba de salir del borde de este
-                    // mismo nivel, no lo vuelve a apoyar y cae limpio al de abajo
-                    if (prevY < ly - 0.5f && c.y >= ly && segAt(L, c.x) != null) {
+                    // Al salir de un borde el auto queda 1 px por debajo de su nivel
+                    // (prevY > ly), así que no se vuelve a apoyar en el mismo tramo.
+                    if (prevY <= ly && c.y >= ly && segAt(L, c.x) != null) {
                         c.y = ly;
                         c.vy = 0;
                         c.grounded = true;
@@ -504,6 +504,13 @@ final class Game {
                         break;
                     }
                 }
+            }
+            // red de seguridad: la calle de abajo es continua, nunca se la atraviesa
+            if (c.vy >= 0 && c.y >= LEVEL_Y[0] && (c.state == P_NORMAL || c == player)) {
+                c.y = LEVEL_Y[0];
+                c.vy = 0;
+                c.grounded = true;
+                c.level = 0;
             }
         }
     }
