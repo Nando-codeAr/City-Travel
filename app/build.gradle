@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+def buildNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace 'net.nandocodear.citytravel'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "net.nandocodear.citytravel"
+        minSdk 24
+        targetSdk 34
+        versionCode buildNumber
+        versionName "1.0." + buildNumber
+    }
+
+    signingConfigs {
+        release {
+            storeFile rootProject.file("keystore/citytravel.jks")
+            storePassword "citytravel2026"
+            keyAlias "citytravel"
+            keyPassword "citytravel2026"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
